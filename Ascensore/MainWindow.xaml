@@ -5,8 +5,15 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Ascensore"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
-        
+        Title="MainWindow" Height="690" Width="800">
+    <Grid Margin="0,0,0,6">
+        <Image Margin="364,0,0,0" Source="fotoLucchi.png" Stretch="Fill"/>
+        <Button x:Name="piano1" Content="1" HorizontalAlignment="Left" Height="83" Margin="62,231,0,0" VerticalAlignment="Top" Width="54" Click="piano1_Click"/>
+        <Button x:Name="piano2" Content="2" HorizontalAlignment="Left" Height="83" Margin="121,231,0,0" VerticalAlignment="Top" Width="54"/>
+        <Button x:Name="piano3" Content="3" HorizontalAlignment="Left" Height="83" Margin="180,231,0,0" VerticalAlignment="Top" Width="54"/>
+        <Button x:Name="piano4" Content="4" HorizontalAlignment="Left" Height="83" Margin="89,319,0,0" VerticalAlignment="Top" Width="54"/>
+        <Button x:Name="piano5" Content="5" HorizontalAlignment="Left" Height="88" Margin="161,319,0,0" VerticalAlignment="Top" Width="54"/>
+        <Image x:Name="imgAscensore" Margin="420,246,290,277" Source="DisegnoAscensore.png" Stretch="Fill"/>
+
     </Grid>
 </Window>

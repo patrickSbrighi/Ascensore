@@ -1,0 +1,15 @@
+C:\Users\User\Desktop\Ascensore\Ascensore\bin\Debug\Ascensore.exe.config
+C:\Users\User\Desktop\Ascensore\Ascensore\bin\Debug\Ascensore.exe
+C:\Users\User\Desktop\Ascensore\Ascensore\bin\Debug\Ascensore.pdb
+C:\Users\User\Desktop\Ascensore\Ascensore\obj\Debug\Ascensore.csprojAssemblyReference.cache
+C:\Users\User\Desktop\Ascensore\Ascensore\obj\Debug\MainWindow.g.cs
+C:\Users\User\Desktop\Ascensore\Ascensore\obj\Debug\App.g.cs
+C:\Users\User\Desktop\Ascensore\Ascensore\obj\Debug\Ascensore_MarkupCompile.cache
+C:\Users\User\Desktop\Ascensore\Ascensore\obj\Debug\Ascensore_MarkupCompile.lref
+C:\Users\User\Desktop\Ascensore\Ascensore\obj\Debug\MainWindow.baml
+C:\Users\User\Desktop\Ascensore\Ascensore\obj\Debug\Ascensore.g.resources
+C:\Users\User\Desktop\Ascensore\Ascensore\obj\Debug\Ascensore.Properties.Resources.resources
+C:\Users\User\Desktop\Ascensore\Ascensore\obj\Debug\Ascensore.csproj.GenerateResource.cache
+C:\Users\User\Desktop\Ascensore\Ascensore\obj\Debug\Ascensore.csproj.CoreCompileInputs.cache
+C:\Users\User\Desktop\Ascensore\Ascensore\obj\Debug\Ascensore.exe
+C:\Users\User\Desktop\Ascensore\Ascensore\obj\Debug\Ascensore.pdb

@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Threading;
 
 namespace Ascensore
 {
@@ -23,6 +24,32 @@ namespace Ascensore
         public MainWindow()
         {
             InitializeComponent();
+            posizioneAscensore = 277;
+        }
+        private int posizioneAscensore;
+        private void piano1_Click(object sender, RoutedEventArgs e)
+        {
+            Thread t1 = new Thread(new ThreadStart(AscensorePiano1));
+            t1.Start();
+
+        }
+
+        private void AscensorePiano1()
+        {
+            int pos = 246;
+            while (posizioneAscensore != 130)
+            {
+                posizioneAscensore += 10;
+                pos -= 10;
+                Thread.Sleep(TimeSpan.FromMilliseconds(500));
+
+                this.Dispatcher.BeginInvoke(new Action(() =>
+                {
+                    imgAscensore.Margin = new Thickness(420, pos, 290, posizioneAscensore);
+                }));
+
+
+            }
         }
     }
 }
