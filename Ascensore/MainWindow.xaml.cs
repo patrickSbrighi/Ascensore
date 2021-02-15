@@ -24,32 +24,125 @@ namespace Ascensore
         public MainWindow()
         {
             InitializeComponent();
-            posizioneAscensore = 277;
+            posizioneInizio2 = 277;
+            semaforo = new Semaphore(0, 1);
+            semaforo.Release(1);
+            posizioneInizio1 = 249;
         }
-        private int posizioneAscensore;
+        private int posizioneInizio2;
+        private Semaphore semaforo;
+        private int posizioneInizio1;
+        private int controlloStop;
         private void piano1_Click(object sender, RoutedEventArgs e)
         {
-            Thread t1 = new Thread(new ThreadStart(AscensorePiano1));
-            t1.Start();
-
+            Thread t = new Thread(new ThreadStart(Thread1));
+            t.Start();
         }
 
-        private void AscensorePiano1()
+        private void Thread1()
         {
-            int pos = 246;
-            while (posizioneAscensore != 130)
+            semaforo.WaitOne();
+            controlloStop = 277;
+            Thread t1 = new Thread(new ThreadStart(AscensorePiano));
+            t1.Start();
+            t1.Join();
+            semaforo.Release();
+        }
+
+        private void AscensorePiano()
+        {
+            if (posizioneInizio2 < controlloStop)
             {
-                posizioneAscensore += 10;
-                pos -= 10;
-                Thread.Sleep(TimeSpan.FromMilliseconds(500));
-
-                this.Dispatcher.BeginInvoke(new Action(() =>
+                while (posizioneInizio2 < controlloStop)
                 {
-                    imgAscensore.Margin = new Thickness(420, pos, 290, posizioneAscensore);
-                }));
+                    posizioneInizio2 += 5;
+                    posizioneInizio1 -= 5;
+                    Thread.Sleep(TimeSpan.FromMilliseconds(100));
 
-
+                    this.Dispatcher.BeginInvoke(new Action(() =>
+                    {
+                        imgAscensore.Margin = new Thickness(420, posizioneInizio1, 290, posizioneInizio2);
+                    }));
+                }
             }
+            else
+            {
+                while (posizioneInizio2 > controlloStop)
+                {
+                    posizioneInizio2 -= 5;
+                    posizioneInizio1 += 5;
+                    Thread.Sleep(TimeSpan.FromMilliseconds(100));
+
+                    this.Dispatcher.BeginInvoke(new Action(() =>
+                    {
+                        imgAscensore.Margin = new Thickness(420, posizioneInizio1, 290, posizioneInizio2);
+                    }));
+                }
+            }
+        }
+
+        private void piano2_Click(object sender, RoutedEventArgs e)
+        {
+            Thread t = new Thread(new ThreadStart(Thread2));
+            t.Start();
+        }
+
+        private void Thread2()
+        {
+            semaforo.WaitOne();
+            controlloStop = 386;
+            Thread t1 = new Thread(new ThreadStart(AscensorePiano));
+            t1.Start();
+            t1.Join();
+            semaforo.Release();
+        }
+
+        private void piano3_Click(object sender, RoutedEventArgs e)
+        {
+            Thread t = new Thread(new ThreadStart(Thread3));
+            t.Start();
+        }
+
+        private void Thread3()
+        {
+            semaforo.WaitOne();
+            controlloStop = 493;
+            Thread t1 = new Thread(new ThreadStart(AscensorePiano));
+            t1.Start();
+            t1.Join();
+            semaforo.Release();
+        }
+
+        private void piano_2_Click(object sender, RoutedEventArgs e)
+        {
+            Thread t = new Thread(new ThreadStart(ThreadM2));
+            t.Start();
+        }
+
+        private void ThreadM2()
+        {
+            semaforo.WaitOne();
+            controlloStop = 59;
+            Thread t1 = new Thread(new ThreadStart(AscensorePiano));
+            t1.Start();
+            t1.Join();
+            semaforo.Release();
+        }
+
+        private void piano_1_Click(object sender, RoutedEventArgs e)
+        {
+            Thread t = new Thread(new ThreadStart(ThreadM1));
+            t.Start();
+        }
+
+        private void ThreadM1()
+        {
+            semaforo.WaitOne();
+            controlloStop = 169;
+            Thread t1 = new Thread(new ThreadStart(AscensorePiano));
+            t1.Start();
+            t1.Join();
+            semaforo.Release();
         }
     }
 }
