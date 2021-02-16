@@ -28,11 +28,13 @@ namespace Ascensore
             semaforo = new Semaphore(0, 1);
             semaforo.Release(1);
             posizioneInizio1 = 249;
+            pianoScelto = int.MinValue;
         }
         private int posizioneInizio2;
         private Semaphore semaforo;
         private int posizioneInizio1;
         private int controlloStop;
+        private int pianoScelto;
         private void piano1_Click(object sender, RoutedEventArgs e)
         {
             Thread t = new Thread(new ThreadStart(Thread1));
@@ -46,6 +48,10 @@ namespace Ascensore
             Thread t1 = new Thread(new ThreadStart(AscensorePiano));
             t1.Start();
             t1.Join();
+            while (pianoScelto == int.MinValue)
+                Thread.Sleep(1000);
+            PortaPersona();
+            pianoScelto = int.MinValue;
             semaforo.Release();
         }
 
@@ -94,6 +100,10 @@ namespace Ascensore
             Thread t1 = new Thread(new ThreadStart(AscensorePiano));
             t1.Start();
             t1.Join();
+            while (pianoScelto == int.MinValue)
+                Thread.Sleep(1000);
+            PortaPersona();
+            pianoScelto = int.MinValue;
             semaforo.Release();
         }
 
@@ -110,6 +120,10 @@ namespace Ascensore
             Thread t1 = new Thread(new ThreadStart(AscensorePiano));
             t1.Start();
             t1.Join();
+            while (pianoScelto == int.MinValue)
+                Thread.Sleep(1000);
+            PortaPersona();
+            pianoScelto = int.MinValue;
             semaforo.Release();
         }
 
@@ -126,6 +140,10 @@ namespace Ascensore
             Thread t1 = new Thread(new ThreadStart(AscensorePiano));
             t1.Start();
             t1.Join();
+            while (pianoScelto == int.MinValue)
+                Thread.Sleep(1000);
+            PortaPersona();
+            pianoScelto = int.MinValue;
             semaforo.Release();
         }
 
@@ -142,7 +160,65 @@ namespace Ascensore
             Thread t1 = new Thread(new ThreadStart(AscensorePiano));
             t1.Start();
             t1.Join();
+            while (pianoScelto == int.MinValue)
+                Thread.Sleep(500);
+            PortaPersona();
+            pianoScelto = int.MinValue;
             semaforo.Release();
+        }
+
+        private void Chiama3_Click(object sender, RoutedEventArgs e)
+        {
+            pianoScelto = 3;
+        }
+
+        private void Chiama2_Click(object sender, RoutedEventArgs e)
+        {
+            pianoScelto = 2;
+        }
+
+        private void PortaPersona()
+        {
+            if (pianoScelto == 3)
+            {
+                controlloStop = 493;
+                AscensorePiano();
+            }
+            else if (pianoScelto == 2)
+            {
+                controlloStop = 386;
+                AscensorePiano();
+            }
+            else if(pianoScelto == 1)
+            {
+                controlloStop = 277;
+                AscensorePiano();
+            }
+            else if(pianoScelto == -1)
+            {
+                controlloStop = 169;
+                AscensorePiano();
+            }
+            else if(pianoScelto == -2)
+            {
+                controlloStop = 59;
+                AscensorePiano();
+            }
+        }
+
+        private void Chiama1_Click(object sender, RoutedEventArgs e)
+        {
+            pianoScelto = 1;
+        }
+
+        private void Chiama_1_Click(object sender, RoutedEventArgs e)
+        {
+            pianoScelto = -1;
+        }
+
+        private void Chiama_2_Click(object sender, RoutedEventArgs e)
+        {
+            pianoScelto = -2;
         }
     }
 }
