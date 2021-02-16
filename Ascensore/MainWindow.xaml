@@ -8,7 +8,7 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="690" Width="800">
     <Grid Margin="0,0,0,6">
-        <Image Source="sfondo.png" Stretch="Fill"/>
+        <Image Source="sfondo.png" Stretch="Fill" Margin="0,0,0,-17"/>
 
         <Image Margin="382,-24,-18,26" Source="casa.png" Stretch="Fill"/>
 
@@ -25,6 +25,11 @@
         <Button x:Name="Chiama_1" Content="-1" HorizontalAlignment="Left" Height="75" Margin="90,472,0,0" VerticalAlignment="Top" Width="60" Click="Chiama_1_Click" Background="#FFC3C3C3" FontSize="36"/>
         <Button x:Name="Chiama_2" Content="-2" HorizontalAlignment="Left" Height="75" Margin="58,552,0,0" VerticalAlignment="Top" Width="60" Click="Chiama_2_Click" Background="#FFC3C3C3" FontSize="36"
                 />
+        <Image x:Name="uomo2" Margin="531,212,225,390" Source="uomo2.png" Stretch="Fill"/>
+        <Image x:Name="uomo3" Margin="531,107,225,498" Source="uomo3.png" Stretch="Fill"/>
+        <Image x:Name="uomo1" Margin="531,313,221,282" Source="uomo1.png" Stretch="Fill"/>
+        <Image x:Name="uomo_1" Margin="526,431,221,173" Source="uomo-1.png" Stretch="Fill"/>
+        <Image x:Name="uomo_2" Margin="526,542,220,65" Source="uomo-2.png" Stretch="Fill"/>
 
     </Grid>
 </Window>
