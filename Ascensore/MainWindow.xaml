@@ -10,15 +10,15 @@
     <Grid Margin="0,0,0,6">
         <Image Source="sfondo.png" Stretch="Fill"/>
 
-        <Image Margin="12,377,628,11" Source="tastierino.png" Stretch="Fill"/>
+        <Image Margin="382,-24,-18,26" Source="casa.png" Stretch="Fill"/>
 
-        <Image Margin="364,0,0,0" Source="fotoLucchi.png" Stretch="Fill"/>
+        <Image Margin="12,377,624,11" Source="tastierino.png" Stretch="Fill"/>
         <Button x:Name="piano1" Content="" HorizontalAlignment="Left" Height="30" Margin="505,336,0,0" VerticalAlignment="Top" Width="21" Click="piano1_Click"/>
         <Button x:Name="piano2" Content="" HorizontalAlignment="Left" Height="30" Margin="505,227,0,0" VerticalAlignment="Top" Width="21" Click="piano2_Click"/>
         <Button x:Name="piano3" Content="" HorizontalAlignment="Left" Height="30" Margin="505,118,0,0" VerticalAlignment="Top" Width="21" Click="piano3_Click"/>
         <Button x:Name="piano_1" Content="" HorizontalAlignment="Left" Height="30" Margin="505,446,0,0" VerticalAlignment="Top" Width="21" Click="piano_1_Click"/>
         <Button x:Name="piano_2" Content="" HorizontalAlignment="Left" Height="30" Margin="505,552,0,0" VerticalAlignment="Top" Width="21" Click="piano_2_Click"/>
-        <Image x:Name="imgAscensore" Margin="418,239,292,287" Source="DisegnoAscensore.png" Stretch="Fill" RenderTransformOrigin="0.433,-0.223"/>
+        <Image x:Name="imgAscensore" Margin="420,249,290,277" Source="DisegnoAscensore.png" Stretch="Fill" RenderTransformOrigin="0.433,-0.223"/>
         <Button x:Name="Chiama3" Content="3" HorizontalAlignment="Left" Height="75" Margin="24,392,0,0" VerticalAlignment="Top" Width="60" Click="Chiama3_Click" Background="#FFC3C3C3" FontSize="36"/>
         <Button x:Name="Chiama2" Content="2" HorizontalAlignment="Left" Height="75" Margin="90,392,0,0" VerticalAlignment="Top" Width="60" Click="Chiama2_Click" Background="#FFC3C3C3" FontSize="36"/>
         <Button x:Name="Chiama1" Content="1" HorizontalAlignment="Left" Height="75" Margin="24,472,0,0" VerticalAlignment="Top" Width="60" Click="Chiama1_Click" Background="#FFC3C3C3" FontSize="36"/>
