@@ -106,5 +106,11 @@
   <ItemGroup>
     <Resource Include="DisegnoAscensore.png" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="tastierino.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="sfondo.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

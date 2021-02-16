@@ -24,15 +24,15 @@ namespace Ascensore
         public MainWindow()
         {
             InitializeComponent();
-            posizioneInizio2 = 277;
+            bottom = 277;
             semaforo = new Semaphore(0, 1);
             semaforo.Release(1);
-            posizioneInizio1 = 249;
+            top = 249;
             pianoScelto = int.MinValue;
         }
-        private int posizioneInizio2;
+        private int bottom;
         private Semaphore semaforo;
-        private int posizioneInizio1;
+        private int top;
         private int controlloStop;
         private int pianoScelto;
         private void piano1_Click(object sender, RoutedEventArgs e)
@@ -57,31 +57,31 @@ namespace Ascensore
 
         private void AscensorePiano()
         {
-            if (posizioneInizio2 < controlloStop)
+            if (bottom < controlloStop)
             {
-                while (posizioneInizio2 < controlloStop)
+                while (bottom < controlloStop)
                 {
-                    posizioneInizio2 += 5;
-                    posizioneInizio1 -= 5;
+                    bottom += 5;
+                    top -= 5;
                     Thread.Sleep(TimeSpan.FromMilliseconds(100));
 
                     this.Dispatcher.BeginInvoke(new Action(() =>
                     {
-                        imgAscensore.Margin = new Thickness(420, posizioneInizio1, 290, posizioneInizio2);
+                        imgAscensore.Margin = new Thickness(420, top, 290, bottom);
                     }));
                 }
             }
             else
             {
-                while (posizioneInizio2 > controlloStop)
+                while (bottom > controlloStop)
                 {
-                    posizioneInizio2 -= 5;
-                    posizioneInizio1 += 5;
+                    bottom -= 5;
+                    top += 5;
                     Thread.Sleep(TimeSpan.FromMilliseconds(100));
 
                     this.Dispatcher.BeginInvoke(new Action(() =>
                     {
-                        imgAscensore.Margin = new Thickness(420, posizioneInizio1, 290, posizioneInizio2);
+                        imgAscensore.Margin = new Thickness(420, top, 290, bottom);
                     }));
                 }
             }
