@@ -384,12 +384,12 @@ namespace Ascensore
                 Thread.Sleep(100);
             AscensorePiano();
 
+            semaforo.Release();
+
             this.Dispatcher.BeginInvoke(new Action(() =>
             {
                 piano1.IsEnabled = true;
             }));
-
-            semaforo.Release();
         }
 
         private void piano2_Click(object sender, RoutedEventArgs e)
@@ -415,12 +415,12 @@ namespace Ascensore
                 Thread.Sleep(100);
             AscensorePiano();
 
+            semaforo.Release();
+
             this.Dispatcher.BeginInvoke(new Action(() =>
             {
                 piano2.IsEnabled = true;
             }));
-
-            semaforo.Release();
         }
 
         private void piano3_Click(object sender, RoutedEventArgs e)
@@ -447,12 +447,12 @@ namespace Ascensore
                 Thread.Sleep(100);
             AscensorePiano();
 
+            semaforo.Release();
+
             this.Dispatcher.BeginInvoke(new Action(() =>
             {
                 piano3.IsEnabled = true;
             }));
-
-            semaforo.Release();
         }
 
         private void piano_2_Click(object sender, RoutedEventArgs e)
@@ -478,12 +478,12 @@ namespace Ascensore
                 Thread.Sleep(100);
             AscensorePiano();
 
+            semaforo.Release();
+
             this.Dispatcher.BeginInvoke(new Action(() =>
             {
                 piano_2.IsEnabled = true;
             }));
-
-            semaforo.Release();
         }
 
         private void piano_1_Click(object sender, RoutedEventArgs e)
@@ -510,11 +510,12 @@ namespace Ascensore
                 Thread.Sleep(500);
             AscensorePiano();
 
+            semaforo.Release();
+
             this.Dispatcher.BeginInvoke(new Action(() =>
             {
                 piano_1.IsEnabled = true;
             }));
-            semaforo.Release();
         }
 
         //Metodo che stabilisce fino a dove è da portare una persona
