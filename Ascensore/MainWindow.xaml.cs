@@ -26,18 +26,22 @@ namespace Ascensore
         {
             //Inizializzazione di tutto
             InitializeComponent();
-            bottom = 277;
             semaforo = new Semaphore(0, 1);
             semaforo.Release(1);
-            top = 249;
             pianoScelto = int.MinValue;
             AbilitaTastiera(false);
             uomoInMovimento = int.MinValue;
             posUomini = InizializzaValori();
+            richiestaPiani = new List<int>();
+            pianoAttuale = int.MinValue;
+            personeDentro = 0;
+
+            _ascensore = new Ascensore(0, 277, 249);
+            _piani = new Dictionary<int, Piano>();
+            CreaPiani();
         }
-        private int bottom;// 2 parametro movimento ascensore
+
         private Semaphore semaforo;
-        private int top;//1 parametro movimento ascensore
         private int controlloStop;//valore di bottom fino al quale si deve muovere
         private int pianoScelto;//piano scelto dopo essere saliti sull'ascensore
         private const int LEFT_UOMO = 439;//Constante che indica la left dell'uomo
@@ -46,7 +50,25 @@ namespace Ascensore
         private Dictionary<int, int[]> posUomini;
         private int topUomo;//top degli uomini
         private int bottomUomo;//bottom degli uomini
-        
+        private int pianoAttuale;//piano dove si trova l'ascensore
+        private int personeDentro;//il numero di persone dentro l'ascensore
+
+        private List<int> richiestaPiani;//piani a cui è stato richiesto l'ascensore;
+
+        private Ascensore _ascensore;
+        private Dictionary<int,Piano> _piani;
+        private void CreaPiani()
+        {
+            _piani.Add(-2, new Piano(-2, 59));
+
+            _piani.Add(-1, new Piano(-1, 169));
+
+            _piani.Add(1, new Piano(1, 274));
+
+            _piani.Add(2, new Piano(2, 380));
+
+            _piani.Add(3, new Piano(3, 488));
+        }
         private Dictionary<int, int[]> InizializzaValori()
         {
             int[] pos = new int[4];
@@ -253,6 +275,8 @@ namespace Ascensore
                     MuoviLateralmenteUomo(LEFT_UOMO, RIGHT_UOMO, false);//l'uomo esce
                     Thread.Sleep(TimeSpan.FromMilliseconds(1000));
                 };
+
+                ProssimoPianoDaAndare();
                 pianoScelto = int.MinValue;
                 uomoInMovimento = int.MinValue;
             }
@@ -366,8 +390,13 @@ namespace Ascensore
             uomo1.Opacity = 100;
             piano1.IsEnabled = false;
             uomo1.Margin = new Thickness(posUomini[1][0], posUomini[1][1], posUomini[1][2], posUomini[1][3]);
-            Thread t = new Thread(new ThreadStart(Thread1));
-            t.Start();
+            richiestaPiani.Add(1);
+
+            if (pianoAttuale == int.MinValue)
+            {
+                ProssimoPianoDaAndare();
+                pianoAttuale = 1;
+            }
         }
 
         private void Thread1()//Metodo del movimeto piano1
@@ -383,7 +412,7 @@ namespace Ascensore
             while (pianoScelto == int.MinValue)
                 Thread.Sleep(100);
             AscensorePiano();
-
+            personeDentro--;
             semaforo.Release();
 
             this.Dispatcher.BeginInvoke(new Action(() =>
@@ -397,8 +426,13 @@ namespace Ascensore
             uomo2.Opacity = 100;
             piano2.IsEnabled = false;
             uomo2.Margin = new Thickness(posUomini[2][0], posUomini[2][1], posUomini[2][2], posUomini[2][3]);
-            Thread t = new Thread(new ThreadStart(Thread2));
-            t.Start();
+            richiestaPiani.Add(2);
+
+            if (pianoAttuale == int.MinValue)
+            {
+                ProssimoPianoDaAndare();
+                pianoAttuale = 2;
+            }
         }
 
         private void Thread2()//Metodo del movimento piano2
@@ -414,7 +448,7 @@ namespace Ascensore
             while (pianoScelto == int.MinValue)
                 Thread.Sleep(100);
             AscensorePiano();
-
+            personeDentro--;
             semaforo.Release();
 
             this.Dispatcher.BeginInvoke(new Action(() =>
@@ -428,8 +462,13 @@ namespace Ascensore
             uomo3.Opacity = 100;
             piano3.IsEnabled = false;
             uomo3.Margin = new Thickness(posUomini[3][0], posUomini[3][1], posUomini[3][2], posUomini[3][3]);
-            Thread t = new Thread(new ThreadStart(Thread3));
-            t.Start();
+            richiestaPiani.Add(3);
+
+            if (pianoAttuale == int.MinValue)
+            {
+                ProssimoPianoDaAndare();
+                pianoAttuale = 3;
+            }
         }
 
         
@@ -446,7 +485,7 @@ namespace Ascensore
             while (pianoScelto == int.MinValue)
                 Thread.Sleep(100);
             AscensorePiano();
-
+            personeDentro--;
             semaforo.Release();
 
             this.Dispatcher.BeginInvoke(new Action(() =>
@@ -460,8 +499,13 @@ namespace Ascensore
             uomo_2.Opacity = 100;
             piano_2.IsEnabled = false;
             uomo_2.Margin = new Thickness(posUomini[-2][0], posUomini[-2][1], posUomini[-2][2], posUomini[-2][3]);
-            Thread t = new Thread(new ThreadStart(ThreadM2));
-            t.Start();
+            richiestaPiani.Add(-2);
+
+            if (pianoAttuale == int.MinValue)
+            {
+                ProssimoPianoDaAndare();
+                pianoAttuale = -2;
+            }
         }
 
         private void ThreadM2() //Metodo del movimento piano-2
@@ -477,7 +521,7 @@ namespace Ascensore
             while (pianoScelto == int.MinValue)
                 Thread.Sleep(100);
             AscensorePiano();
-
+            personeDentro--;
             semaforo.Release();
 
             this.Dispatcher.BeginInvoke(new Action(() =>
@@ -491,12 +535,16 @@ namespace Ascensore
             uomo_1.Opacity = 100;
             piano_1.IsEnabled = false;
             uomo_1.Margin = new Thickness(posUomini[-1][0], posUomini[-1][1], posUomini[-1][2], posUomini[-1][3]);
-            Thread t = new Thread(new ThreadStart(ThreadM1));
-            t.Start();
+            richiestaPiani.Add(-1);
+
+            if (pianoAttuale == int.MinValue)
+            {
+                ProssimoPianoDaAndare();
+                pianoAttuale = -1;
+            }
+
         }
-
-
-        private void ThreadM1()//Metodo del movimento piano-1
+            private void ThreadM1()//Metodo del movimento piano-1
         {
             semaforo.WaitOne();
             uomoInMovimento = -1;
@@ -509,7 +557,7 @@ namespace Ascensore
             while (pianoScelto == int.MinValue)
                 Thread.Sleep(500);
             AscensorePiano();
-
+            personeDentro--;
             semaforo.Release();
 
             this.Dispatcher.BeginInvoke(new Action(() =>
@@ -595,30 +643,95 @@ namespace Ascensore
             }
         }
 
+
+        private void ProssimoPianoDaAndare()
+        {
+            if (pianoAttuale == int.MinValue)
+            {
+                PartiDaPiano();
+                richiestaPiani.RemoveAt(0);
+                personeDentro++;
+            }
+            else
+            {
+                int aux;
+                int differenza = int.MaxValue;
+                int count = 0;
+
+                foreach (int i in richiestaPiani)
+                {
+                    count++;
+                    if (differenza > Math.Abs(i - pianoAttuale))
+                    {
+                        aux = richiestaPiani[0];
+                        richiestaPiani[0] = i;
+                        richiestaPiani[count] = aux;
+                    }
+                }
+
+                personeDentro++;
+                PartiDaPiano();
+            }
+        }
+
+        private void PartiDaPiano()
+        {
+            if (richiestaPiani[0] == 1)
+            {
+                Thread t = new Thread(new ThreadStart(Thread1));
+                t.Start();
+            }
+            else if (richiestaPiani[0] == 2)
+            {
+                Thread t = new Thread(new ThreadStart(Thread2));
+                t.Start();
+            }
+            else if (richiestaPiani[0] == 3)
+            {
+                Thread t = new Thread(new ThreadStart(Thread3));
+                t.Start();
+            }
+            else if (richiestaPiani[0] == -1)
+            {
+                Thread t = new Thread(new ThreadStart(ThreadM1));
+                t.Start();
+            }
+            else if (richiestaPiani[0] == -2)
+            {
+                Thread t = new Thread(new ThreadStart(ThreadM2));
+                t.Start();
+            }
+        }
+
         //Chiamate dei vari piani da tastierino
         private void Chiama1_Click(object sender, RoutedEventArgs e)
         {
             pianoScelto = 1;
+            pianoAttuale = 1;
         }
 
         private void Chiama_1_Click(object sender, RoutedEventArgs e)
         {
             pianoScelto = -1;
+            pianoAttuale = -1;
         }
 
         private void Chiama_2_Click(object sender, RoutedEventArgs e)
         {
             pianoScelto = -2;
+            pianoAttuale = -2;
         }
 
         private void Chiama3_Click(object sender, RoutedEventArgs e)
         {
             pianoScelto = 3;
+            pianoAttuale = 3;
         }
 
         private void Chiama2_Click(object sender, RoutedEventArgs e)
         {
             pianoScelto = 2;
+            pianoAttuale = 2;
         }
     }
 }
