@@ -39,6 +39,7 @@ namespace Ascensore
             _ascensore = new Ascensore(0, 277, 249);
             _piani = new Dictionary<int, Piano>();
             CreaPiani();
+            CreaUomini();
         }
 
         private Semaphore semaforo;
@@ -56,7 +57,10 @@ namespace Ascensore
         private List<int> richiestaPiani;//piani a cui è stato richiesto l'ascensore;
 
         private Ascensore _ascensore;
-        private Dictionary<int,Piano> _piani;
+        private Dictionary<int, Piano> _piani;
+        private List<Uomo> _uomini;
+        private List<Richiesta> _richieste;
+        private Piano _actualPiano;
         private void CreaPiani()
         {
             _piani.Add(-2, new Piano(-2, 59));
@@ -69,6 +73,16 @@ namespace Ascensore
 
             _piani.Add(3, new Piano(3, 488));
         }
+
+        private void CreaUomini()
+        {
+            _uomini.Add(new Uomo(uomo1, false));
+            _uomini.Add(new Uomo(uomo2, false));
+            _uomini.Add(new Uomo(uomo3, false));
+            _uomini.Add(new Uomo(uomo_1, false));
+            _uomini.Add(new Uomo(uomo_2, false));
+        }
+
         private Dictionary<int, int[]> InizializzaValori()
         {
             int[] pos = new int[4];
@@ -116,9 +130,9 @@ namespace Ascensore
 
             return toReturn;
         }
-        
+
         //Rende opaco l'uomo
-        private void OpacaUomo(int n, bool opaca)
+        /*private void OpacaUomo(int n, bool opaca)
         {
             if (opaca)
             {
@@ -166,42 +180,45 @@ namespace Ascensore
                     uomo_2.Opacity = 100;
                 }
             }
-        }
-        
+            
+        }*/
+
         //Metodo del movimento generale, ascensore, uomini, apparizione e sparizione
         private void AscensorePiano()
         {
-            if (pianoScelto == int.MinValue)//l'ascensore vuoto si sta muovendo
+            if (!_richieste[0].PresoUomo)
             {
-                if (bottom < controlloStop)//se l'ascensore è più in altro
+                if (_ascensore.ActualBottom < controlloStop)//se l'ascensore è più in altro
                 {
-                    while (bottom < controlloStop)
+                    while (_ascensore.ActualBottom < controlloStop)
                     {
-                        bottom += 2;
-                        top -= 2;
+                        _ascensore.ActualBottom += 2;
+                        _ascensore.ActualTop -= 2;
                         Thread.Sleep(TimeSpan.FromMilliseconds(50));
 
                         this.Dispatcher.BeginInvoke(new Action(() =>
                         {
-                            imgAscensore.Margin = new Thickness(420, top, 290, bottom);
+                            imgAscensore.Margin = new Thickness(420, _ascensore.ActualTop, 290, _ascensore.ActualBottom);
                         }));
                     }
                 }
                 else//se l'ascensore è più in basso
                 {
-                    while (bottom > controlloStop)
+                    while (_ascensore.ActualBottom > controlloStop)
                     {
-                        bottom -= 2;
-                        top += 2;
+                        _ascensore.ActualBottom -= 2;
+                        _ascensore.ActualTop += 2;
                         Thread.Sleep(TimeSpan.FromMilliseconds(50));
 
                         this.Dispatcher.BeginInvoke(new Action(() =>
                         {
-                            imgAscensore.Margin = new Thickness(420, top, 290, bottom);
+                            imgAscensore.Margin = new Thickness(420, _ascensore.ActualTop, 290, _ascensore.ActualBottom);
                         }));
                     }
                 }
-                MuoviLateralmenteUomo(posUomini[uomoInMovimento][0], posUomini[uomoInMovimento][2], true);
+
+                MuoviLateralmenteUomo(_richieste[0].Uomo.Left, _richieste[0].Uomo.Right, true);
+
                 this.Dispatcher.BeginInvoke(new Action(() =>
                 {
                     AbilitaTastiera(true);
@@ -212,7 +229,7 @@ namespace Ascensore
                 //copre l'uomo
                 this.Dispatcher.BeginInvoke(new Action(() =>
                 {
-                    OpacaUomo(uomoInMovimento, true);
+                    _richieste[0].Uomo.Immagine.Opacity = 0;
                 }));
 
                 //Toglie la possibilità di usare la tastiers
@@ -221,55 +238,55 @@ namespace Ascensore
                     AbilitaTastiera(false);
                 }));
 
-                PortaPersona();
-                aletzzeUomoMovimento();
-                
-                if (bottom < controlloStop)//l'uomo sta entrando
+
+                if (_ascensore.ActualBottom < controlloStop)//l'uomo sta entrando
                 {
-                    while (bottom < controlloStop)
+                    while (_ascensore.ActualBottom < controlloStop)
                     {
-                        bottomUomo += 2;
-                        topUomo -= 2;
-                        bottom += 2;
-                        top -= 2;
+                        _richieste[0].Uomo.Bottom += 2;
+                        _richieste[0].Uomo.Top -= 2;
+                        _ascensore.ActualBottom += 2;
+                        _ascensore.ActualTop -= 2;
                         Thread.Sleep(TimeSpan.FromMilliseconds(50));
 
                         this.Dispatcher.BeginInvoke(new Action(() =>
                         {
-                            imgAscensore.Margin = new Thickness(420, top, 290, bottom);
+                            imgAscensore.Margin = new Thickness(420, _ascensore.ActualTop, 290, _ascensore.ActualBottom);
                         }));
-                        
+
                     }
+
                     this.Dispatcher.BeginInvoke(new Action(() =>
                     {
-                        OpacaUomo(uomoInMovimento, false);
-                        MuoviFuoriUomo();
+                        _richieste[0].Uomo.Immagine.Opacity = 100;
+                        _richieste[0].Uomo.Immagine.Margin = new Thickness(LEFT_UOMO, _richieste[0].Uomo.Top, RIGHT_UOMO, _richieste[0].Uomo.Bottom);
                     }));
+
                     MuoviLateralmenteUomo(LEFT_UOMO, RIGHT_UOMO, false);
                     Thread.Sleep(TimeSpan.FromMilliseconds(1000));
                 }
                 else //l'uomo deve uscire
                 {
 
-                    while (bottom > controlloStop)//Ascensore va nel piano scelto
+                    while (_ascensore.ActualBottom > controlloStop)//Ascensore va nel piano scelto
                     {
-                        bottom -= 2;
-                        top += 2;
-                        bottomUomo -= 2;
-                        topUomo += 2;
+                        _ascensore.ActualBottom -= 2;
+                        _ascensore.ActualTop += 2;
+                        _richieste[0].Uomo.Bottom -= 2;
+                        _richieste[0].Uomo.Top += 2;
                         Thread.Sleep(TimeSpan.FromMilliseconds(50));
 
                         this.Dispatcher.BeginInvoke(new Action(() =>
                         {
-                            imgAscensore.Margin = new Thickness(420, top, 290, bottom);
+                            imgAscensore.Margin = new Thickness(420, _ascensore.ActualTop, 290, _ascensore.ActualBottom);
                         }));
                     }
 
                     //appare l'uomo coperto
                     this.Dispatcher.BeginInvoke(new Action(() =>
                     {
-                        OpacaUomo(uomoInMovimento, false);
-                        MuoviFuoriUomo();//viene messo nella posizione dell'ascensore
+                        _richieste[0].Uomo.Immagine.Opacity = 100;
+                        _richieste[0].Uomo.Immagine.Margin = new Thickness(LEFT_UOMO, _richieste[0].Uomo.Top, RIGHT_UOMO, _richieste[0].Uomo.Bottom);//viene messo nella posizione dell'ascensore
                     }));
 
                     MuoviLateralmenteUomo(LEFT_UOMO, RIGHT_UOMO, false);//l'uomo esce
@@ -278,7 +295,7 @@ namespace Ascensore
 
                 ProssimoPianoDaAndare();
                 pianoScelto = int.MinValue;
-                uomoInMovimento = int.MinValue;
+                //uomoInMovimento = int.MinValue;
             }
         }
 
@@ -287,122 +304,117 @@ namespace Ascensore
         {
             if (sinistra)
             {
-                while (left > LEFT_UOMO)
+                while (_richieste[0].Uomo.Left > LEFT_UOMO)
                 {
-                    left -= 5;
-                    right += 5;
+                    _richieste[0].Uomo.Left -= 5;
+                    _richieste[0].Uomo.Right += 5;
                     Thread.Sleep(TimeSpan.FromMilliseconds(50));
 
                     this.Dispatcher.BeginInvoke(new Action(() =>
                     {
-                        if (uomoInMovimento == 1)
-                        {
-                            uomo1.Margin = new Thickness(left, 316, right, 279);
-                        }
-                        else if (uomoInMovimento == 2)
-                        {
-                            uomo2.Margin = new Thickness(left, 216, right, 385);
-                        }
-                        else if (uomoInMovimento == 3)
-                        {
-                            uomo3.Margin = new Thickness(left, 112, right, 493);
-                        }
-                        else if (uomoInMovimento == -1)
-                        {
-                            uomo_1.Margin = new Thickness(left, 433, right, 171);
-                        }
-                        else if (uomoInMovimento == -2)
-                        {
-                            uomo_2.Margin = new Thickness(left, 543, right, 64);
-                        }
+                        _richieste[0].Uomo.Immagine.Margin = new Thickness(_richieste[0].Uomo.Left, 316, _richieste[0].Uomo.Right, 279);
+
                     }));
                 }
             }
             else
             {
-                while (left < 614)//valore di defalut
+                while (_richieste[0].Uomo.Left < 614)//valore di defalut
                 {
-                    left += 5;
-                    right -= 5;
+                    _richieste[0].Uomo.Left += 5;
+                    _richieste[0].Uomo.Right -= 5;
                     Thread.Sleep(TimeSpan.FromMilliseconds(50));
 
                     this.Dispatcher.BeginInvoke(new Action(() =>
                     {
-                        if (uomoInMovimento == 1)
-                        {
-                            uomo1.Margin = new Thickness(left, topUomo, right, bottomUomo);
-                        }
-                        else if (uomoInMovimento == 2)
-                        {
-                            uomo2.Margin = new Thickness(left, topUomo, right, bottomUomo);
-                        }
-                        else if (uomoInMovimento == 3)
-                        {
-                            uomo3.Margin = new Thickness(left, topUomo, right, bottomUomo);
-                        }
-                        else if (uomoInMovimento == -1)
-                        {
-                            uomo_1.Margin = new Thickness(left, topUomo, right, bottomUomo);
-                        }
-                        else if (uomoInMovimento == -2)
-                        {
-                            uomo_2.Margin = new Thickness(left, topUomo, right, bottomUomo);
-                        }
+                        _richieste[0].Uomo.Immagine.Margin = new Thickness(_richieste[0].Uomo.Left, topUomo, _richieste[0].Uomo.Right, bottomUomo);
                     }));
                 }
 
                 //Copre l'uomo
                 this.Dispatcher.BeginInvoke(new Action(() =>
                 {
-                    OpacaUomo(uomoInMovimento, true);
+                    _richieste[0].Uomo.Immagine.Opacity = 0;
                 }));
             }
         }
 
-        //Metodo che fa posizionare l'uomo dentro l'ascensore dopo che si è mosso
-        private void MuoviFuoriUomo()
-        {
-            if (uomoInMovimento == 1)
-            {
-                uomo1.Margin = new Thickness(LEFT_UOMO, topUomo, RIGHT_UOMO, bottomUomo);
-            }
-            else if (uomoInMovimento == 2)
-            {
-                uomo2.Margin = new Thickness(LEFT_UOMO, topUomo, RIGHT_UOMO, bottomUomo);
-            }
-            else if (uomoInMovimento == 3)
-            {
-                uomo3.Margin = new Thickness(LEFT_UOMO, topUomo, RIGHT_UOMO, bottomUomo);
-            }
-            else if (uomoInMovimento == -1)
-            {
-                uomo_1.Margin = new Thickness(LEFT_UOMO, topUomo, RIGHT_UOMO, bottomUomo);
-            }
-            else if (uomoInMovimento == -2)
-            {
-                uomo_2.Margin = new Thickness(LEFT_UOMO, topUomo, RIGHT_UOMO, bottomUomo);
-            }
-        }
-
-
         private void piano1_Click(object sender, RoutedEventArgs e)
         {
-            uomo1.Opacity = 100;
-            piano1.IsEnabled = false;
-            uomo1.Margin = new Thickness(posUomini[1][0], posUomini[1][1], posUomini[1][2], posUomini[1][3]);
-            richiestaPiani.Add(1);
+            int indiceImmagine = -1;
 
-            if (pianoAttuale == int.MinValue)
+            for (int i = 0; i < _uomini.Count; i++)
             {
-                ProssimoPianoDaAndare();
-                pianoAttuale = 1;
+                if (!_uomini[i].Occupato)
+                {
+                    _uomini[i].Immagine.Opacity = 100;
+                    _uomini[i].Occupato = true;
+                    indiceImmagine = i;
+                    break;
+                }
+            }
+
+            if (indiceImmagine > -1)
+            {
+                _uomini[indiceImmagine].Immagine.Margin = new Thickness(posUomini[1][0], posUomini[1][1], posUomini[1][2], posUomini[1][3]);
+
+                _uomini[indiceImmagine].Left = posUomini[1][0];
+                _uomini[indiceImmagine].Top = posUomini[1][1];
+                _uomini[indiceImmagine].Left = posUomini[1][2];
+                _uomini[indiceImmagine].Left = posUomini[1][3];
+
+                Richiesta r = new Richiesta(_piani[1], _uomini[indiceImmagine], 0);
+                _richieste.Add(r);
+
+                if (pianoAttuale == int.MinValue)
+                {
+                    ProssimoPianoDaAndare();
+                    pianoAttuale = 1;
+                }
+            }
+            else
+            {
+                MessageBox.Show("Tutti gli uomini sono occupati");
             }
         }
 
-        private void Thread1()//Metodo del movimeto piano1
+        private void Partenza()
         {
             semaforo.WaitOne();
-            uomoInMovimento = 1;
+
+            if (_richieste[0].PresoUomo == false)
+            {
+                controlloStop = _richieste[0].PianoIniziale.Bottom;
+                _actualPiano = _richieste[0].PianoIniziale;
+            }
+            else
+            {
+                controlloStop = _richieste[0].PianoArrivo.Bottom;
+                _actualPiano = _richieste[0].PianoArrivo;
+            }
+
+            Thread t1 = new Thread(new ThreadStart(AscensorePiano));
+            t1.Start();
+            t1.Join();
+
+            if (_richieste[0].PresoUomo == false)
+            {
+                while (pianoScelto == int.MinValue)
+                    Thread.Sleep(100);
+                _richieste[0].PianoArrivo = _piani[pianoScelto];
+                _richieste[0].PresoUomo = true;
+            }
+            else
+            {
+                _richieste.RemoveAt(0);
+            }
+
+            semaforo.Release();
+        }
+
+        /*private void Thread1()//Metodo del movimeto piano1
+        {
+            semaforo.WaitOne();
             controlloStop = 274;
 
             Thread t1 = new Thread(new ThreadStart(AscensorePiano));
@@ -419,23 +431,48 @@ namespace Ascensore
             {
                 piano1.IsEnabled = true;
             }));
-        }
+        }*/
 
         private void piano2_Click(object sender, RoutedEventArgs e)
         {
-            uomo2.Opacity = 100;
-            piano2.IsEnabled = false;
-            uomo2.Margin = new Thickness(posUomini[2][0], posUomini[2][1], posUomini[2][2], posUomini[2][3]);
-            richiestaPiani.Add(2);
+            int indiceImmagine = -1;
 
-            if (pianoAttuale == int.MinValue)
+            for (int i = 0; i < _uomini.Count; i++)
             {
-                ProssimoPianoDaAndare();
-                pianoAttuale = 2;
+                if (!_uomini[i].Occupato)
+                {
+                    _uomini[i].Immagine.Opacity = 100;
+                    _uomini[i].Occupato = true;
+                    indiceImmagine = i;
+                    break;
+                }
+            }
+
+            if (indiceImmagine > -1)
+            {
+                _uomini[indiceImmagine].Immagine.Margin = new Thickness(posUomini[2][0], posUomini[2][1], posUomini[2][2], posUomini[2][3]);
+
+                _uomini[indiceImmagine].Left = posUomini[2][0];
+                _uomini[indiceImmagine].Top = posUomini[2][1];
+                _uomini[indiceImmagine].Left = posUomini[2][2];
+                _uomini[indiceImmagine].Left = posUomini[2][3];
+
+                Richiesta r = new Richiesta(_piani[2], _uomini[indiceImmagine], 0);
+                _richieste.Add(r);
+
+                if (pianoAttuale == int.MinValue)
+                {
+                    ProssimoPianoDaAndare();
+                    pianoAttuale = 2;
+                }
+            }
+            else
+            {
+                MessageBox.Show("Tutti gli uomini sono occupati");
             }
         }
 
-        private void Thread2()//Metodo del movimento piano2
+        /*private void Thread2()//Metodo del movimento piano2
         {
             semaforo.WaitOne();
             uomoInMovimento = 2;
@@ -455,24 +492,49 @@ namespace Ascensore
             {
                 piano2.IsEnabled = true;
             }));
-        }
+        }*/
 
         private void piano3_Click(object sender, RoutedEventArgs e)
         {
-            uomo3.Opacity = 100;
-            piano3.IsEnabled = false;
-            uomo3.Margin = new Thickness(posUomini[3][0], posUomini[3][1], posUomini[3][2], posUomini[3][3]);
-            richiestaPiani.Add(3);
+            int indiceImmagine = -1;
 
-            if (pianoAttuale == int.MinValue)
+            for (int i = 0; i < _uomini.Count; i++)
             {
-                ProssimoPianoDaAndare();
-                pianoAttuale = 3;
+                if (!_uomini[i].Occupato)
+                {
+                    _uomini[i].Immagine.Opacity = 100;
+                    _uomini[i].Occupato = true;
+                    indiceImmagine = i;
+                    break;
+                }
+            }
+
+            if (indiceImmagine > -1)
+            {
+                _uomini[indiceImmagine].Immagine.Margin = new Thickness(posUomini[3][0], posUomini[3][1], posUomini[3][2], posUomini[3][3]);
+
+                _uomini[indiceImmagine].Left = posUomini[3][0];
+                _uomini[indiceImmagine].Top = posUomini[3][1];
+                _uomini[indiceImmagine].Left = posUomini[3][2];
+                _uomini[indiceImmagine].Left = posUomini[3][3];
+
+                Richiesta r = new Richiesta(_piani[3], _uomini[indiceImmagine], 0);
+                _richieste.Add(r);
+
+                if (pianoAttuale == int.MinValue)
+                {
+                    ProssimoPianoDaAndare();
+                    pianoAttuale = 3;
+                }
+            }
+            else
+            {
+                MessageBox.Show("Tutti gli uomini sono occupati");
             }
         }
 
-        
-        private void Thread3()//Metodon del movimento piano3
+
+        /*private void Thread3()//Metodon del movimento piano3
         {
             semaforo.WaitOne();
             uomoInMovimento = 3;
@@ -492,23 +554,48 @@ namespace Ascensore
             {
                 piano3.IsEnabled = true;
             }));
-        }
+        }*/
 
         private void piano_2_Click(object sender, RoutedEventArgs e)
         {
-            uomo_2.Opacity = 100;
-            piano_2.IsEnabled = false;
-            uomo_2.Margin = new Thickness(posUomini[-2][0], posUomini[-2][1], posUomini[-2][2], posUomini[-2][3]);
-            richiestaPiani.Add(-2);
+            int indiceImmagine = -1;
 
-            if (pianoAttuale == int.MinValue)
+            for (int i = 0; i < _uomini.Count; i++)
             {
-                ProssimoPianoDaAndare();
-                pianoAttuale = -2;
+                if (!_uomini[i].Occupato)
+                {
+                    _uomini[i].Immagine.Opacity = 100;
+                    _uomini[i].Occupato = true;
+                    indiceImmagine = i;
+                    break;
+                }
+            }
+
+            if (indiceImmagine > -1)
+            {
+                _uomini[indiceImmagine].Immagine.Margin = new Thickness(posUomini[-2][0], posUomini[-2][1], posUomini[-2][2], posUomini[-2][3]);
+
+                _uomini[indiceImmagine].Left = posUomini[-2][0];
+                _uomini[indiceImmagine].Top = posUomini[-2][1];
+                _uomini[indiceImmagine].Left = posUomini[-2][2];
+                _uomini[indiceImmagine].Left = posUomini[-2][3];
+
+                Richiesta r = new Richiesta(_piani[-2], _uomini[indiceImmagine], 0);
+                _richieste.Add(r);
+
+                if (pianoAttuale == int.MinValue)
+                {
+                    ProssimoPianoDaAndare();
+                    pianoAttuale = -2;
+                }
+            }
+            else
+            {
+                MessageBox.Show("Tutti gli uomini sono occupati");
             }
         }
 
-        private void ThreadM2() //Metodo del movimento piano-2
+        /*private void ThreadM2() //Metodo del movimento piano-2
         {
             semaforo.WaitOne();
             uomoInMovimento = -2;
@@ -528,23 +615,49 @@ namespace Ascensore
             {
                 piano_2.IsEnabled = true;
             }));
-        }
+        }*/
 
         private void piano_1_Click(object sender, RoutedEventArgs e)
         {
-            uomo_1.Opacity = 100;
-            piano_1.IsEnabled = false;
-            uomo_1.Margin = new Thickness(posUomini[-1][0], posUomini[-1][1], posUomini[-1][2], posUomini[-1][3]);
-            richiestaPiani.Add(-1);
+            int indiceImmagine = -1;
 
-            if (pianoAttuale == int.MinValue)
+            for (int i = 0; i < _uomini.Count; i++)
             {
-                ProssimoPianoDaAndare();
-                pianoAttuale = -1;
+                if (!_uomini[i].Occupato)
+                {
+                    _uomini[i].Immagine.Opacity = 100;
+                    _uomini[i].Occupato = true;
+                    indiceImmagine = i;
+                    break;
+                }
+            }
+
+            if (indiceImmagine > -1)
+            {
+                _uomini[indiceImmagine].Immagine.Margin = new Thickness(posUomini[-1][0], posUomini[-1][1], posUomini[-1][2], posUomini[-1][3]);
+
+                _uomini[indiceImmagine].Left = posUomini[-1][0];
+                _uomini[indiceImmagine].Top = posUomini[-1][1];
+                _uomini[indiceImmagine].Left = posUomini[-1][2];
+                _uomini[indiceImmagine].Left = posUomini[-1][3];
+
+                Richiesta r = new Richiesta(_piani[-1], _uomini[indiceImmagine], 0);
+                _richieste.Add(r);
+
+                if (pianoAttuale == int.MinValue)
+                {
+                    ProssimoPianoDaAndare();
+                    pianoAttuale = -1;
+                }
+            }
+            else
+            {
+                MessageBox.Show("Tutti gli uomini sono occupati");
             }
 
         }
-            private void ThreadM1()//Metodo del movimento piano-1
+
+        /*private void ThreadM1()//Metodo del movimento piano-1
         {
             semaforo.WaitOne();
             uomoInMovimento = -1;
@@ -564,10 +677,10 @@ namespace Ascensore
             {
                 piano_1.IsEnabled = true;
             }));
-        }
+        }*/
 
         //Metodo che stabilisce fino a dove è da portare una persona
-        private void PortaPersona()
+        /*private void PortaPersona()
         {
             if (pianoScelto == 3)
             {
@@ -577,24 +690,24 @@ namespace Ascensore
             {
                 controlloStop = 380;
             }
-            else if(pianoScelto == 1)
+            else if (pianoScelto == 1)
             {
                 controlloStop = 274;
             }
-            else if(pianoScelto == -1)
+            else if (pianoScelto == -1)
             {
                 controlloStop = 169;
             }
-            else if(pianoScelto == -2)
+            else if (pianoScelto == -2)
             {
                 controlloStop = 59;
             }
-        } 
-        
+        }*/
+
         //Metodo che definisce i valore di top e botton uomo per poterlo m ettere nell'ascensore all'uscita
-        private void aletzzeUomoMovimento()
+        /*private void aletzzeUomoMovimento()
         {
-            if(uomoInMovimento == 1)
+            if (uomoInMovimento == 1)
             {
                 topUomo = posUomini[1][1];
                 bottomUomo = posUomini[1][3];
@@ -614,12 +727,12 @@ namespace Ascensore
                 topUomo = posUomini[-1][1];
                 bottomUomo = posUomini[-1][3];
             }
-            else if(uomoInMovimento == -2)
+            else if (uomoInMovimento == -2)
             {
                 topUomo = posUomini[-2][1];
                 bottomUomo = posUomini[-2][3];
             }
-        }
+        }*/
 
 
         //Metodo che abilita il tastierino
@@ -646,35 +759,47 @@ namespace Ascensore
 
         private void ProssimoPianoDaAndare()
         {
-            if (pianoAttuale == int.MinValue)
-            {
-                PartiDaPiano();
-                richiestaPiani.RemoveAt(0);
-                personeDentro++;
-            }
-            else
-            {
-                int aux;
-                int differenza = int.MaxValue;
-                int count = 0;
+            int indice = -1;
+            int differenza = int.MaxValue;
 
-                foreach (int i in richiestaPiani)
+            for(int i = 0; i < _richieste.Count; i++)
+            {
+                _richieste[i].Balzi++;
+                if (_richieste[i].PresoUomo && _richieste[i].Balzi < 3 )
                 {
-                    count++;
-                    if (differenza > Math.Abs(i - pianoAttuale))
+                    if (Math.Abs(_actualPiano.Numero - _richieste[i].PianoArrivo.Numero) < differenza)
                     {
-                        aux = richiestaPiani[0];
-                        richiestaPiani[0] = i;
-                        richiestaPiani[count] = aux;
+                        differenza = Math.Abs(_actualPiano.Numero - _richieste[i].PianoArrivo.Numero);
+                        indice = i;
                     }
                 }
-
-                personeDentro++;
-                PartiDaPiano();
+                else if(!_richieste[i].PresoUomo && _richieste[i].Balzi < 3)
+                {
+                    if (Math.Abs(_actualPiano.Numero - _richieste[i].PianoIniziale.Numero) < differenza)
+                    {
+                        differenza = Math.Abs(_actualPiano.Numero - _richieste[i].PianoArrivo.Numero);
+                        indice = i;
+                    }
+                }
+                else
+                {
+                    indice = i;
+                    break;
+                }
             }
+
+            _richieste[indice].Balzi--;
+
+            Richiesta r = _richieste[indice];
+            _richieste[indice] = _richieste[0];
+            _richieste[0] = _richieste[indice];
+
+            Thread t = new Thread(new ThreadStart(Partenza));
+            t.Start();
+            t.Join();
         }
 
-        private void PartiDaPiano()
+        /*private void PartiDaPiano()
         {
             if (richiestaPiani[0] == 1)
             {
@@ -701,37 +826,37 @@ namespace Ascensore
                 Thread t = new Thread(new ThreadStart(ThreadM2));
                 t.Start();
             }
-        }
+        }*/
 
         //Chiamate dei vari piani da tastierino
         private void Chiama1_Click(object sender, RoutedEventArgs e)
         {
             pianoScelto = 1;
-            pianoAttuale = 1;
+            //pianoAttuale = 1;
         }
 
         private void Chiama_1_Click(object sender, RoutedEventArgs e)
         {
             pianoScelto = -1;
-            pianoAttuale = -1;
+            //pianoAttuale = -1;
         }
 
         private void Chiama_2_Click(object sender, RoutedEventArgs e)
         {
             pianoScelto = -2;
-            pianoAttuale = -2;
+            //pianoAttuale = -2;
         }
 
         private void Chiama3_Click(object sender, RoutedEventArgs e)
         {
             pianoScelto = 3;
-            pianoAttuale = 3;
+            //pianoAttuale = 3;
         }
 
         private void Chiama2_Click(object sender, RoutedEventArgs e)
         {
             pianoScelto = 2;
-            pianoAttuale = 2;
+            //pianoAttuale = 2;
         }
     }
 }

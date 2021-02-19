@@ -21,7 +21,7 @@ namespace Ascensore
             set;
         }
 
-        public Image Uomo { get; set; }
+        public Uomo Uomo { get; set; }
 
         private int _balzi;
         public int Balzi
@@ -35,10 +35,17 @@ namespace Ascensore
             }
         }
 
-        public Richiesta(Piano inizio, Image uomo, int balzi)
+        public bool PresoUomo
         {
-            PianoIniziale = inizio
+            get;
+            set;
+        }
+
+        public Richiesta(Piano inizio, Uomo uomo, int balzi, bool preso = false)
+        {
+            PianoIniziale = inizio;
             Uomo = uomo;
+            PresoUomo = false;
             Balzi = balzi;
         }
     }
