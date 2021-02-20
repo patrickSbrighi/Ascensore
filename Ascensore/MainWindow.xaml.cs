@@ -356,6 +356,74 @@ namespace Ascensore
         //Metodo che fa muovere l'uomo a destra o sinistra
         private void MuoviLateralmenteUomo(int left, int right, bool sinistra)
         {
+            int top = 0;
+            int bottom = 0;
+            for (int i = -2; i < 3; i++)
+            {
+                if (_richiestaInEsecuzione.PresoUomo)
+                {
+                    if (_richiestaInEsecuzione.PianoArrivo.Numero == i)
+                    {
+                        if (i == -2)
+                        {
+                            top = posUomini[-2][1];
+                            bottom = posUomini[-2][3];
+                        }
+                        else if (i == -1)
+                        {
+                            top = posUomini[-1][1];
+                            bottom = posUomini[-1][3];
+                        }
+                        else if (i == 1)
+                        {
+                            top = posUomini[1][1];
+                            bottom = posUomini[1][3];
+                        }
+                        else if (i == 2)
+                        {
+                            top = posUomini[2][1];
+                            bottom = posUomini[2][3];
+                        }
+                        else if (i == 3)
+                        {
+                            top = posUomini[3][1];
+                            bottom = posUomini[3][3];
+                        }
+                    }
+                }
+                else
+                {
+                    if (_richiestaInEsecuzione.PianoIniziale.Numero == i)
+                    {
+                        if (i == -2)
+                        {
+                            top = posUomini[-2][1];
+                            bottom = posUomini[-2][3];
+                        }
+                        else if (i == -1)
+                        {
+                            top = posUomini[-1][1];
+                            bottom = posUomini[-1][3];
+                        }
+                        else if (i == 1)
+                        {
+                            top = posUomini[1][1];
+                            bottom = posUomini[1][3];
+                        }
+                        else if (i == 2)
+                        {
+                            top = posUomini[2][1];
+                            bottom = posUomini[2][3];
+                        }
+                        else if (i == 3)
+                        {
+                            top = posUomini[3][1];
+                            bottom = posUomini[3][3];
+                        }
+                    }
+                }
+            }
+
             if (sinistra)
             {
                 while (_richiestaInEsecuzione.Uomo.Left > LEFT_UOMO)
@@ -368,23 +436,23 @@ namespace Ascensore
                     {
                         if (_richiestaInEsecuzione.Uomo.Immagine == uomo1)
                         {
-                            uomo1.Margin = new Thickness(_richiestaInEsecuzione.Uomo.Left, 316, _richiestaInEsecuzione.Uomo.Right, 279);
+                            uomo1.Margin = new Thickness(_richiestaInEsecuzione.Uomo.Left, _richiestaInEsecuzione.Uomo.Top, _richiestaInEsecuzione.Uomo.Right, _richiestaInEsecuzione.Uomo.Bottom);
                         }
                         else if (_richiestaInEsecuzione.Uomo.Immagine == uomo2)
                         {
-                            uomo2.Margin = new Thickness(_richiestaInEsecuzione.Uomo.Left, 316, _richiestaInEsecuzione.Uomo.Right, 279);
+                            uomo2.Margin = new Thickness(_richiestaInEsecuzione.Uomo.Left, _richiestaInEsecuzione.Uomo.Top, _richiestaInEsecuzione.Uomo.Right, _richiestaInEsecuzione.Uomo.Bottom);
                         }
                         else if (_richiestaInEsecuzione.Uomo.Immagine == uomo3)
                         {
-                            uomo3.Margin = new Thickness(_richiestaInEsecuzione.Uomo.Left, 316, _richiestaInEsecuzione.Uomo.Right, 279);
+                            uomo3.Margin = new Thickness(_richiestaInEsecuzione.Uomo.Left, _richiestaInEsecuzione.Uomo.Top, _richiestaInEsecuzione.Uomo.Right, _richiestaInEsecuzione.Uomo.Bottom);
                         }
                         else if (_richiestaInEsecuzione.Uomo.Immagine == uomo_1)
                         {
-                            uomo_1.Margin = new Thickness(_richiestaInEsecuzione.Uomo.Left, 316, _richiestaInEsecuzione.Uomo.Right, 279);
+                            uomo_1.Margin = new Thickness(_richiestaInEsecuzione.Uomo.Left, _richiestaInEsecuzione.Uomo.Top, _richiestaInEsecuzione.Uomo.Right, _richiestaInEsecuzione.Uomo.Bottom);
                         }
                         else if (_richiestaInEsecuzione.Uomo.Immagine == uomo_2)
                         {
-                            uomo_2.Margin = new Thickness(_richiestaInEsecuzione.Uomo.Left, 316, _richiestaInEsecuzione.Uomo.Right, 279);
+                            uomo_2.Margin = new Thickness(_richiestaInEsecuzione.Uomo.Left, _richiestaInEsecuzione.Uomo.Top, _richiestaInEsecuzione.Uomo.Right, _richiestaInEsecuzione.Uomo.Bottom);
                         }
 
                     }));
@@ -443,8 +511,8 @@ namespace Ascensore
         private void piano1_Click(object sender, RoutedEventArgs e)
         {
             uomo1.Opacity = 100;
-            _uomini[1].Occupato = true;
-            int indiceImmagine = 1;
+            _uomini[0].Occupato = true;
+            int indiceImmagine = 0;
 
             if (indiceImmagine > -1)
             {
@@ -531,8 +599,8 @@ namespace Ascensore
         private void piano2_Click(object sender, RoutedEventArgs e)
         {
             uomo2.Opacity = 100;
-            _uomini[2].Occupato = true;
-            int indiceImmagine = 2;
+            _uomini[1].Occupato = true;
+            int indiceImmagine = 1;
 
             if (indiceImmagine > -1)
             {
@@ -584,8 +652,8 @@ namespace Ascensore
         private void piano3_Click(object sender, RoutedEventArgs e)
         {
             uomo3.Opacity = 100;
-            _uomini[3].Occupato = true;
-           int indiceImmagine = 3;
+            _uomini[2].Occupato = true;
+           int indiceImmagine = 2;
 
             if (indiceImmagine > -1)
             {
@@ -638,8 +706,8 @@ namespace Ascensore
         private void piano_2_Click(object sender, RoutedEventArgs e)
         {
             uomo_2.Opacity = 100;
-            _uomini[-2].Occupato = true;
-            int indiceImmagine = -2;
+            _uomini[4].Occupato = true;
+            int indiceImmagine = 4;
 
             if (indiceImmagine > -1)
             {
@@ -691,8 +759,8 @@ namespace Ascensore
         private void piano_1_Click(object sender, RoutedEventArgs e)
         {
             uomo_1.Opacity = 100;
-            _uomini[-1].Occupato = true;
-            int indiceImmagine = -1;
+            _uomini[3].Occupato = true;
+            int indiceImmagine = 3;
 
             if (indiceImmagine > -1)
             {
