@@ -30,16 +30,16 @@ namespace Ascensore
             semaforo.Release(1);
             pianoScelto = int.MinValue;
             AbilitaTastiera(false);
-            uomoInMovimento = int.MinValue;
             posUomini = InizializzaValori();
-            richiestaPiani = new List<int>();
-            pianoAttuale = int.MinValue;
-            personeDentro = 0;
 
-            _ascensore = new Ascensore(0, 277, 249);
+            //_richieste = new List<Richiesta>();
+            _ascensore = new Ascensore1(0, 277, 249, new List<Richiesta>());
             _piani = new Dictionary<int, Piano>();
+            _actualPiano = new Piano(1, 0);
+            _uomini = new List<Uomo>();
             CreaPiani();
             CreaUomini();
+            _firstClick = true;
         }
 
         private Semaphore semaforo;
@@ -47,20 +47,17 @@ namespace Ascensore
         private int pianoScelto;//piano scelto dopo essere saliti sull'ascensore
         private const int LEFT_UOMO = 439;//Constante che indica la left dell'uomo
         private const int RIGHT_UOMO = 315;//Constante che indica la right dell'uomo
-        private int uomoInMovimento;//Uomo che si sta muovendo
         private Dictionary<int, int[]> posUomini;
-        private int topUomo;//top degli uomini
-        private int bottomUomo;//bottom degli uomini
-        private int pianoAttuale;//piano dove si trova l'ascensore
-        private int personeDentro;//il numero di persone dentro l'ascensore
+        //private int pianoAttuale;//piano dove si trova l'ascensore
 
-        private List<int> richiestaPiani;//piani a cui è stato richiesto l'ascensore;
 
-        private Ascensore _ascensore;
+        private Ascensore1 _ascensore;
         private Dictionary<int, Piano> _piani;
         private List<Uomo> _uomini;
-        private List<Richiesta> _richieste;
+        //private List<Richiesta> _richieste;
         private Piano _actualPiano;
+        private bool _firstClick;
+        private Richiesta _richiestaInEsecuzione;
         private void CreaPiani()
         {
             _piani.Add(-2, new Piano(-2, 59));
@@ -186,7 +183,7 @@ namespace Ascensore
         //Metodo del movimento generale, ascensore, uomini, apparizione e sparizione
         private void AscensorePiano()
         {
-            if (!_richieste[0].PresoUomo)
+            if (!_richiestaInEsecuzione.PresoUomo)
             {
                 if (_ascensore.ActualBottom < controlloStop)//se l'ascensore è più in altro
                 {
@@ -217,7 +214,7 @@ namespace Ascensore
                     }
                 }
 
-                MuoviLateralmenteUomo(_richieste[0].Uomo.Left, _richieste[0].Uomo.Right, true);
+                MuoviLateralmenteUomo(_richiestaInEsecuzione.Uomo.Left, _richiestaInEsecuzione.Uomo.Right, true);
 
                 this.Dispatcher.BeginInvoke(new Action(() =>
                 {
@@ -229,7 +226,16 @@ namespace Ascensore
                 //copre l'uomo
                 this.Dispatcher.BeginInvoke(new Action(() =>
                 {
-                    _richieste[0].Uomo.Immagine.Opacity = 0;
+                    if (_richiestaInEsecuzione.Uomo.Immagine == uomo1)
+                        uomo1.Opacity = 0;
+                    else if (_richiestaInEsecuzione.Uomo.Immagine == uomo2)
+                        uomo2.Opacity = 0;
+                    else if (_richiestaInEsecuzione.Uomo.Immagine == uomo3)
+                        uomo3.Opacity = 0;
+                    else if (_richiestaInEsecuzione.Uomo.Immagine == uomo_1)
+                        uomo_1.Opacity = 0;
+                    else if (_richiestaInEsecuzione.Uomo.Immagine == uomo_2)
+                        uomo_2.Opacity = 0;
                 }));
 
                 //Toglie la possibilità di usare la tastiers
@@ -243,8 +249,8 @@ namespace Ascensore
                 {
                     while (_ascensore.ActualBottom < controlloStop)
                     {
-                        _richieste[0].Uomo.Bottom += 2;
-                        _richieste[0].Uomo.Top -= 2;
+                        _richiestaInEsecuzione.Uomo.Bottom += 2;
+                        _richiestaInEsecuzione.Uomo.Top -= 2;
                         _ascensore.ActualBottom += 2;
                         _ascensore.ActualTop -= 2;
                         Thread.Sleep(TimeSpan.FromMilliseconds(50));
@@ -258,8 +264,32 @@ namespace Ascensore
 
                     this.Dispatcher.BeginInvoke(new Action(() =>
                     {
-                        _richieste[0].Uomo.Immagine.Opacity = 100;
-                        _richieste[0].Uomo.Immagine.Margin = new Thickness(LEFT_UOMO, _richieste[0].Uomo.Top, RIGHT_UOMO, _richieste[0].Uomo.Bottom);
+                        if (_richiestaInEsecuzione.Uomo.Immagine == uomo1)
+                        {
+                            uomo1.Opacity = 100;
+                            uomo1.Margin = new Thickness(LEFT_UOMO, _richiestaInEsecuzione.Uomo.Top, RIGHT_UOMO, _richiestaInEsecuzione.Uomo.Bottom);
+                        }
+                        else if (_richiestaInEsecuzione.Uomo.Immagine == uomo2)
+                        {
+                            uomo2.Opacity = 100;
+                            uomo2.Margin = new Thickness(LEFT_UOMO, _richiestaInEsecuzione.Uomo.Top, RIGHT_UOMO, _richiestaInEsecuzione.Uomo.Bottom);
+                        }
+                        else if (_richiestaInEsecuzione.Uomo.Immagine == uomo3)
+                        {
+                            uomo3.Opacity = 100;
+                            uomo3.Margin = new Thickness(LEFT_UOMO, _richiestaInEsecuzione.Uomo.Top, RIGHT_UOMO, _richiestaInEsecuzione.Uomo.Bottom);
+                        }
+                        else if (_richiestaInEsecuzione.Uomo.Immagine == uomo_1)
+                        {
+                            uomo_1.Opacity = 100;
+                            uomo_1.Margin = new Thickness(LEFT_UOMO, _richiestaInEsecuzione.Uomo.Top, RIGHT_UOMO, _richiestaInEsecuzione.Uomo.Bottom);
+                        }
+                        else if (_richiestaInEsecuzione.Uomo.Immagine == uomo_2)
+                        {
+                            uomo_2.Opacity = 100;
+                            uomo_2.Margin = new Thickness(LEFT_UOMO, _richiestaInEsecuzione.Uomo.Top, RIGHT_UOMO, _richiestaInEsecuzione.Uomo.Bottom);
+                        }
+                        
                     }));
 
                     MuoviLateralmenteUomo(LEFT_UOMO, RIGHT_UOMO, false);
@@ -272,8 +302,8 @@ namespace Ascensore
                     {
                         _ascensore.ActualBottom -= 2;
                         _ascensore.ActualTop += 2;
-                        _richieste[0].Uomo.Bottom -= 2;
-                        _richieste[0].Uomo.Top += 2;
+                        _richiestaInEsecuzione.Uomo.Bottom -= 2;
+                        _richiestaInEsecuzione.Uomo.Top += 2;
                         Thread.Sleep(TimeSpan.FromMilliseconds(50));
 
                         this.Dispatcher.BeginInvoke(new Action(() =>
@@ -285,15 +315,39 @@ namespace Ascensore
                     //appare l'uomo coperto
                     this.Dispatcher.BeginInvoke(new Action(() =>
                     {
-                        _richieste[0].Uomo.Immagine.Opacity = 100;
-                        _richieste[0].Uomo.Immagine.Margin = new Thickness(LEFT_UOMO, _richieste[0].Uomo.Top, RIGHT_UOMO, _richieste[0].Uomo.Bottom);//viene messo nella posizione dell'ascensore
+                        if (_richiestaInEsecuzione.Uomo.Immagine == uomo1)
+                        {
+                            uomo1.Opacity = 100;
+                            uomo1.Margin = new Thickness(LEFT_UOMO, _richiestaInEsecuzione.Uomo.Top, RIGHT_UOMO, _richiestaInEsecuzione.Uomo.Bottom);
+                        }
+                        else if (_richiestaInEsecuzione.Uomo.Immagine == uomo2)
+                        {
+                            uomo2.Opacity = 100;
+                            uomo2.Margin = new Thickness(LEFT_UOMO, _richiestaInEsecuzione.Uomo.Top, RIGHT_UOMO, _richiestaInEsecuzione.Uomo.Bottom);
+                        }
+                        else if (_richiestaInEsecuzione.Uomo.Immagine == uomo3)
+                        {
+                            uomo3.Opacity = 100;
+                            uomo3.Margin = new Thickness(LEFT_UOMO, _richiestaInEsecuzione.Uomo.Top, RIGHT_UOMO, _richiestaInEsecuzione.Uomo.Bottom);
+                        }
+                        else if (_richiestaInEsecuzione.Uomo.Immagine == uomo_1)
+                        {
+                            uomo_1.Opacity = 100;
+                            uomo_1.Margin = new Thickness(LEFT_UOMO, _richiestaInEsecuzione.Uomo.Top, RIGHT_UOMO, _richiestaInEsecuzione.Uomo.Bottom);
+                        }
+                        else if (_richiestaInEsecuzione.Uomo.Immagine == uomo_2)
+                        {
+                            uomo_2.Opacity = 100;
+                            uomo_2.Margin = new Thickness(LEFT_UOMO, _richiestaInEsecuzione.Uomo.Top, RIGHT_UOMO, _richiestaInEsecuzione.Uomo.Bottom);
+                        }
                     }));
 
                     MuoviLateralmenteUomo(LEFT_UOMO, RIGHT_UOMO, false);//l'uomo esce
                     Thread.Sleep(TimeSpan.FromMilliseconds(1000));
                 };
 
-                ProssimoPianoDaAndare();
+                if (_ascensore.Richieste.Count != 0)
+                    _richiestaInEsecuzione = _ascensore.ProssimaDaFare(_actualPiano);
                 pianoScelto = int.MinValue;
                 //uomoInMovimento = int.MinValue;
             }
@@ -304,55 +358,93 @@ namespace Ascensore
         {
             if (sinistra)
             {
-                while (_richieste[0].Uomo.Left > LEFT_UOMO)
+                while (_richiestaInEsecuzione.Uomo.Left > LEFT_UOMO)
                 {
-                    _richieste[0].Uomo.Left -= 5;
-                    _richieste[0].Uomo.Right += 5;
+                    _richiestaInEsecuzione.Uomo.Left -= 5;
+                    _richiestaInEsecuzione.Uomo.Right += 5;
                     Thread.Sleep(TimeSpan.FromMilliseconds(50));
 
                     this.Dispatcher.BeginInvoke(new Action(() =>
                     {
-                        _richieste[0].Uomo.Immagine.Margin = new Thickness(_richieste[0].Uomo.Left, 316, _richieste[0].Uomo.Right, 279);
+                        if (_richiestaInEsecuzione.Uomo.Immagine == uomo1)
+                        {
+                            uomo1.Margin = new Thickness(_richiestaInEsecuzione.Uomo.Left, 316, _richiestaInEsecuzione.Uomo.Right, 279);
+                        }
+                        else if (_richiestaInEsecuzione.Uomo.Immagine == uomo2)
+                        {
+                            uomo2.Margin = new Thickness(_richiestaInEsecuzione.Uomo.Left, 316, _richiestaInEsecuzione.Uomo.Right, 279);
+                        }
+                        else if (_richiestaInEsecuzione.Uomo.Immagine == uomo3)
+                        {
+                            uomo3.Margin = new Thickness(_richiestaInEsecuzione.Uomo.Left, 316, _richiestaInEsecuzione.Uomo.Right, 279);
+                        }
+                        else if (_richiestaInEsecuzione.Uomo.Immagine == uomo_1)
+                        {
+                            uomo_1.Margin = new Thickness(_richiestaInEsecuzione.Uomo.Left, 316, _richiestaInEsecuzione.Uomo.Right, 279);
+                        }
+                        else if (_richiestaInEsecuzione.Uomo.Immagine == uomo_2)
+                        {
+                            uomo_2.Margin = new Thickness(_richiestaInEsecuzione.Uomo.Left, 316, _richiestaInEsecuzione.Uomo.Right, 279);
+                        }
 
                     }));
                 }
             }
             else
             {
-                while (_richieste[0].Uomo.Left < 614)//valore di defalut
+                while (_richiestaInEsecuzione.Uomo.Left < 614)//valore di defalut
                 {
-                    _richieste[0].Uomo.Left += 5;
-                    _richieste[0].Uomo.Right -= 5;
+                    _richiestaInEsecuzione.Uomo.Left += 5;
+                    _richiestaInEsecuzione.Uomo.Right -= 5;
                     Thread.Sleep(TimeSpan.FromMilliseconds(50));
 
                     this.Dispatcher.BeginInvoke(new Action(() =>
                     {
-                        _richieste[0].Uomo.Immagine.Margin = new Thickness(_richieste[0].Uomo.Left, topUomo, _richieste[0].Uomo.Right, bottomUomo);
+                        if (_richiestaInEsecuzione.Uomo.Immagine == uomo1)
+                        {
+                            uomo1.Margin = new Thickness(_richiestaInEsecuzione.Uomo.Left, _richiestaInEsecuzione.Uomo.Top, _richiestaInEsecuzione.Uomo.Right, _richiestaInEsecuzione.Uomo.Bottom);
+                        }
+                        else if (_richiestaInEsecuzione.Uomo.Immagine == uomo2)
+                        {
+                            uomo2.Margin = new Thickness(_richiestaInEsecuzione.Uomo.Left, _richiestaInEsecuzione.Uomo.Top, _richiestaInEsecuzione.Uomo.Right, _richiestaInEsecuzione.Uomo.Bottom);
+                        }
+                        else if (_richiestaInEsecuzione.Uomo.Immagine == uomo3)
+                        {
+                            uomo3.Margin = new Thickness(_richiestaInEsecuzione.Uomo.Left, _richiestaInEsecuzione.Uomo.Top, _richiestaInEsecuzione.Uomo.Right, _richiestaInEsecuzione.Uomo.Bottom);
+                        }
+                        else if (_richiestaInEsecuzione.Uomo.Immagine == uomo_1)
+                        {
+                            uomo_1.Margin = new Thickness(_richiestaInEsecuzione.Uomo.Left, _richiestaInEsecuzione.Uomo.Top, _richiestaInEsecuzione.Uomo.Right, _richiestaInEsecuzione.Uomo.Bottom);
+                        }
+                        else if (_richiestaInEsecuzione.Uomo.Immagine == uomo_2)
+                        {
+                            uomo_2.Margin = new Thickness(_richiestaInEsecuzione.Uomo.Left, _richiestaInEsecuzione.Uomo.Top, _richiestaInEsecuzione.Uomo.Right, _richiestaInEsecuzione.Uomo.Bottom);
+                        }
                     }));
                 }
 
                 //Copre l'uomo
                 this.Dispatcher.BeginInvoke(new Action(() =>
                 {
-                    _richieste[0].Uomo.Immagine.Opacity = 0;
+                    if (_richiestaInEsecuzione.Uomo.Immagine == uomo1)
+                        uomo1.Opacity = 0;
+                    else if (_richiestaInEsecuzione.Uomo.Immagine == uomo2)
+                        uomo2.Opacity = 0;
+                    else if (_richiestaInEsecuzione.Uomo.Immagine == uomo3)
+                        uomo3.Opacity = 0;
+                    else if (_richiestaInEsecuzione.Uomo.Immagine == uomo_1)
+                        uomo_1.Opacity = 0;
+                    else if (_richiestaInEsecuzione.Uomo.Immagine == uomo_2)
+                        uomo_2.Opacity = 0;
                 }));
             }
         }
 
         private void piano1_Click(object sender, RoutedEventArgs e)
         {
-            int indiceImmagine = -1;
-
-            for (int i = 0; i < _uomini.Count; i++)
-            {
-                if (!_uomini[i].Occupato)
-                {
-                    _uomini[i].Immagine.Opacity = 100;
-                    _uomini[i].Occupato = true;
-                    indiceImmagine = i;
-                    break;
-                }
-            }
+            uomo1.Opacity = 100;
+            _uomini[1].Occupato = true;
+            int indiceImmagine = 1;
 
             if (indiceImmagine > -1)
             {
@@ -364,12 +456,13 @@ namespace Ascensore
                 _uomini[indiceImmagine].Left = posUomini[1][3];
 
                 Richiesta r = new Richiesta(_piani[1], _uomini[indiceImmagine], 0);
-                _richieste.Add(r);
+                _ascensore.Richieste.Add(r);
 
-                if (pianoAttuale == int.MinValue)
+                if (_firstClick)
                 {
-                    ProssimoPianoDaAndare();
-                    pianoAttuale = 1;
+                    _firstClick = false;
+                    Thread parti = new Thread(new ThreadStart(Partenza));
+                    parti.Start();
                 }
             }
             else
@@ -381,32 +474,34 @@ namespace Ascensore
         private void Partenza()
         {
             semaforo.WaitOne();
+            while (_ascensore.Richieste.Count != 0)
+            {
+                _richiestaInEsecuzione = _ascensore.ProssimaDaFare(_actualPiano);
 
-            if (_richieste[0].PresoUomo == false)
-            {
-                controlloStop = _richieste[0].PianoIniziale.Bottom;
-                _actualPiano = _richieste[0].PianoIniziale;
-            }
-            else
-            {
-                controlloStop = _richieste[0].PianoArrivo.Bottom;
-                _actualPiano = _richieste[0].PianoArrivo;
-            }
+                if (_richiestaInEsecuzione.PresoUomo == false)
+                {
+                    controlloStop = _richiestaInEsecuzione.PianoIniziale.Bottom;
+                    _actualPiano = _richiestaInEsecuzione.PianoIniziale;
+                }
+                else
+                {
+                    controlloStop = _richiestaInEsecuzione.PianoArrivo.Bottom;
+                    _actualPiano = _richiestaInEsecuzione.PianoArrivo;
+                }
 
-            Thread t1 = new Thread(new ThreadStart(AscensorePiano));
-            t1.Start();
-            t1.Join();
+                Thread t1 = new Thread(new ThreadStart(AscensorePiano));
+                t1.Start();
+                t1.Join();
 
-            if (_richieste[0].PresoUomo == false)
-            {
-                while (pianoScelto == int.MinValue)
-                    Thread.Sleep(100);
-                _richieste[0].PianoArrivo = _piani[pianoScelto];
-                _richieste[0].PresoUomo = true;
-            }
-            else
-            {
-                _richieste.RemoveAt(0);
+                if (_richiestaInEsecuzione.PresoUomo == false)
+                {
+                    _richiestaInEsecuzione.PresoUomo = true;
+                    while (pianoScelto == int.MinValue)
+                        Thread.Sleep(100);
+                    _richiestaInEsecuzione.PianoArrivo = _piani[pianoScelto];
+                    _richiestaInEsecuzione.PresoUomo = true;
+                    _ascensore.Richieste.Add(_richiestaInEsecuzione);
+                }
             }
 
             semaforo.Release();
@@ -435,18 +530,9 @@ namespace Ascensore
 
         private void piano2_Click(object sender, RoutedEventArgs e)
         {
-            int indiceImmagine = -1;
-
-            for (int i = 0; i < _uomini.Count; i++)
-            {
-                if (!_uomini[i].Occupato)
-                {
-                    _uomini[i].Immagine.Opacity = 100;
-                    _uomini[i].Occupato = true;
-                    indiceImmagine = i;
-                    break;
-                }
-            }
+            uomo2.Opacity = 100;
+            _uomini[2].Occupato = true;
+            int indiceImmagine = 2;
 
             if (indiceImmagine > -1)
             {
@@ -458,12 +544,13 @@ namespace Ascensore
                 _uomini[indiceImmagine].Left = posUomini[2][3];
 
                 Richiesta r = new Richiesta(_piani[2], _uomini[indiceImmagine], 0);
-                _richieste.Add(r);
+                _ascensore.Richieste.Add(r);
 
-                if (pianoAttuale == int.MinValue)
+                if (_firstClick)
                 {
-                    ProssimoPianoDaAndare();
-                    pianoAttuale = 2;
+                    _firstClick = false;
+                    Thread parti = new Thread(new ThreadStart(Partenza));
+                    parti.Start();
                 }
             }
             else
@@ -496,18 +583,9 @@ namespace Ascensore
 
         private void piano3_Click(object sender, RoutedEventArgs e)
         {
-            int indiceImmagine = -1;
-
-            for (int i = 0; i < _uomini.Count; i++)
-            {
-                if (!_uomini[i].Occupato)
-                {
-                    _uomini[i].Immagine.Opacity = 100;
-                    _uomini[i].Occupato = true;
-                    indiceImmagine = i;
-                    break;
-                }
-            }
+            uomo3.Opacity = 100;
+            _uomini[3].Occupato = true;
+           int indiceImmagine = 3;
 
             if (indiceImmagine > -1)
             {
@@ -519,12 +597,13 @@ namespace Ascensore
                 _uomini[indiceImmagine].Left = posUomini[3][3];
 
                 Richiesta r = new Richiesta(_piani[3], _uomini[indiceImmagine], 0);
-                _richieste.Add(r);
+                _ascensore.Richieste.Add(r);
 
-                if (pianoAttuale == int.MinValue)
+                if (_firstClick)
                 {
-                    ProssimoPianoDaAndare();
-                    pianoAttuale = 3;
+                    _firstClick = false;
+                    Thread parti = new Thread(new ThreadStart(Partenza));
+                    parti.Start();
                 }
             }
             else
@@ -558,18 +637,9 @@ namespace Ascensore
 
         private void piano_2_Click(object sender, RoutedEventArgs e)
         {
-            int indiceImmagine = -1;
-
-            for (int i = 0; i < _uomini.Count; i++)
-            {
-                if (!_uomini[i].Occupato)
-                {
-                    _uomini[i].Immagine.Opacity = 100;
-                    _uomini[i].Occupato = true;
-                    indiceImmagine = i;
-                    break;
-                }
-            }
+            uomo_2.Opacity = 100;
+            _uomini[-2].Occupato = true;
+            int indiceImmagine = -2;
 
             if (indiceImmagine > -1)
             {
@@ -581,12 +651,13 @@ namespace Ascensore
                 _uomini[indiceImmagine].Left = posUomini[-2][3];
 
                 Richiesta r = new Richiesta(_piani[-2], _uomini[indiceImmagine], 0);
-                _richieste.Add(r);
+                _ascensore.Richieste.Add(r);
 
-                if (pianoAttuale == int.MinValue)
+                if (_firstClick)
                 {
-                    ProssimoPianoDaAndare();
-                    pianoAttuale = -2;
+                    _firstClick = false;
+                    Thread parti = new Thread(new ThreadStart(Partenza));
+                    parti.Start();
                 }
             }
             else
@@ -619,18 +690,9 @@ namespace Ascensore
 
         private void piano_1_Click(object sender, RoutedEventArgs e)
         {
+            uomo_1.Opacity = 100;
+            _uomini[-1].Occupato = true;
             int indiceImmagine = -1;
-
-            for (int i = 0; i < _uomini.Count; i++)
-            {
-                if (!_uomini[i].Occupato)
-                {
-                    _uomini[i].Immagine.Opacity = 100;
-                    _uomini[i].Occupato = true;
-                    indiceImmagine = i;
-                    break;
-                }
-            }
 
             if (indiceImmagine > -1)
             {
@@ -642,12 +704,13 @@ namespace Ascensore
                 _uomini[indiceImmagine].Left = posUomini[-1][3];
 
                 Richiesta r = new Richiesta(_piani[-1], _uomini[indiceImmagine], 0);
-                _richieste.Add(r);
+                _ascensore.Richieste.Add(r);
 
-                if (pianoAttuale == int.MinValue)
+                if (_firstClick)
                 {
-                    ProssimoPianoDaAndare();
-                    pianoAttuale = -1;
+                    _firstClick = false;
+                    Thread parti = new Thread(new ThreadStart(Partenza));
+                    parti.Start();
                 }
             }
             else
@@ -757,7 +820,7 @@ namespace Ascensore
         }
 
 
-        private void ProssimoPianoDaAndare()
+        /*private void ProssimoPianoDaAndare()
         {
             int indice = -1;
             int differenza = int.MaxValue;
@@ -777,7 +840,7 @@ namespace Ascensore
                 {
                     if (Math.Abs(_actualPiano.Numero - _richieste[i].PianoIniziale.Numero) < differenza)
                     {
-                        differenza = Math.Abs(_actualPiano.Numero - _richieste[i].PianoArrivo.Numero);
+                        differenza = Math.Abs(_actualPiano.Numero - _richieste[i].PianoIniziale.Numero);
                         indice = i;
                     }
                 }
@@ -794,10 +857,11 @@ namespace Ascensore
             _richieste[indice] = _richieste[0];
             _richieste[0] = _richieste[indice];
 
-            Thread t = new Thread(new ThreadStart(Partenza));
-            t.Start();
-            t.Join();
-        }
+            if (_richieste[0].PresoUomo)
+                _actualPiano = _richieste[0].PianoArrivo;
+            else
+                _actualPiano = _richieste[0].PianoIniziale;
+        }*/
 
         /*private void PartiDaPiano()
         {

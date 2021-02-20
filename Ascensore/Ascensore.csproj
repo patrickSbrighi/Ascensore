@@ -55,7 +55,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Ascensore.cs" />
+    <Compile Include="Ascensore1.cs" />
     <Compile Include="Richiesta.cs" />
     <Compile Include="Uomo.cs" />
     <Page Include="MainWindow.xaml">
